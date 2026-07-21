@@ -18,6 +18,12 @@ Table EmployeeTypes {
   EmployeeTypeName varchar
 }
 
+Table Staff {
+  StaffId integer [pk]
+  EmployeeId integer [not null]
+  JobClass varchar [not null]
+}
+
 Table Volunteer {
   VolunteerId integer [pk]
   EmployeeId integer [not null]
@@ -55,6 +61,7 @@ Table Patient {
   PhysicianId integer [not null] // responsible physician
   ReferringPhysicianId integer [not null]
   CareCenterId integer [not null]
+  ContactDate datetime [not null]
   AdmittanceTypeId integer [not null]
   AdmittedDate datetime [not null]
   Comments text
@@ -66,17 +73,21 @@ Table PatientResidents {
   BedId integer [not null]
 }
 
+Table Outpatient {
+  OutpatientId integer [pk]
+  PatientId integer [not null]
+}
+
 Table AdmittanceTypes {
   AdmittanceTypeId integer [pk]
   AdmittanceTypeName varchar
 }
 
 Table PatientVisit {
-  VisitId integer [pk]
-  PatientId integer [not null]
-  VisitDate datetime [not null]
+  PatientId integer [not null, pk]
+  VisitDate datetime [not null, pk]
   Comments varchar
-}
+} // should be composite key, but appears to be limitation with dbdiagrams.io
 
 Table Treatments {
   TreatmentId integer [pk]
@@ -85,13 +96,27 @@ Table Treatments {
 }
 
 Table TreatmentRecord {
-  TreatmentRecordId integer [pk]
-  PatientId integer [not null]
-  PhysicianId integer [not null]
-  TreatmentId integer [not null]
+  PatientId integer [not null, pk]
+  PhysicianId integer [not null, pk]
+  TreatmentId integer [not null, pk]
   TreatmentDate datetime [not null]
   TreatmentTime integer [not null]
   TreatmentResults varchar
+}
+
+Table Item {
+  ItemId integer [pk]
+  Description varchar
+  UnitCost decimal
+}
+
+Table ItemConsumption {
+  PatientId integer [not null]
+  ItemId integer [not null]
+  Date datetime [not null]
+  Time integer [not null]
+  Quantity integer
+  TotalCost decimal
 }
 
 Table CareCenter {
@@ -122,7 +147,13 @@ Table EmployeeCareCenterAssignment {
   AssignmentId integer [pk]
   EmployeeId integer [not null]
   CareCenterId integer [not null]
+  HoursPerWeek integer
   IsNurseInCharge bool
+  
+  checks {
+    `EmployeeID exists in (select EmployeeID from Nurse where CertificateTypeName = 'RegisteredNurse'` [name: 'NurseMustBeRN']
+  }
+  
 }
 
 Table EmployeeCareCenterAssignmentWorkEntry {
@@ -166,3 +197,7 @@ Ref: EmployeeCareCenterAssignment.EmployeeId > Employee.EmployeeId
 Ref: EmployeeCareCenterAssignment.CareCenterId > CareCenter.CareCenterId
 
 Ref: EmployeeCareCenterAssignmentWorkEntry.AssignmentId > EmployeeCareCenterAssignment.AssignmentId
+
+Ref: Staff.EmployeeId > Employee.EmployeeId
+
+Ref: Outpatient.PatientId > Patient.PatientId
