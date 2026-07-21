@@ -1,0 +1,101 @@
+Four groups of Persons
+	Employees
+	Physicians
+	Patients
+	Volunteers
+
+Person:
+	person_ID PK ID
+	Name
+	Address
+	Birth_Date
+	Phone_Nunber
+
+Employee
+	HiredDate
+	
+	
+EmployeeCareCenterAssignment
+	EmployeeId
+	CarCenterId
+
+EmployeeCareCenterAssignmentWorkEntry
+	Week
+	Hours
+	
+	
+	empNurse
+		certificate (RN or LPN)
+		NIC?
+	
+Volunteers
+	Skill
+	
+Physician
+	Specialty
+	PagerNumber
+	Patients
+	ContactDate
+	- Admitted to Hospital OR Registed Out Patient
+	- ONE PhysicianId
+	- Comments
+	
+Visits
+	Date "partial identifier"
+	Comments
+	
+	VisitItems
+		ItemID
+		Quantity
+		UnitCost
+		date
+		
+	Treatment
+		physicianid
+		treatmentid
+		treatmentnumber
+		treatmentname
+	
+ResidentPatients
+	PatientId
+	BedId
+	
+Physician
+	(member of hosptiral staff)
+	
+Treatments
+	
+PhysicianAvailableTreatments
+	physicianId
+	TreamentId
+
+PhysicianAppliedTreaments
+	Date
+	time
+	Results
+	patid
+	patientid
+	
+	
+Beds
+	bednumber
+	room number
+	carecenterid
+	
+
+CarCenter
+	(maternity, emerg, cardiology)
+	name
+	location
+	
+Labratory
+	name
+	location
+	
+technician
+	labratory
+	
+Item
+	itemnumber
+	description
+	unitcost

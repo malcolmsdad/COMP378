@@ -1,0 +1,165 @@
+Table Persons {
+  PersonId integer [primary key]
+  Name varchar
+  Address varchar
+  BirthDate date [not null]
+  PhoneNumber varchar
+}
+
+Table Employee {
+  EmployeeId integer [primary key]
+  PersonId integer [not null]
+  EmployeeTypeName varchar [not null]
+  HiredDate date
+}
+
+Table EmployeeTypes {
+  EmployeeTypeId integer [primary key]
+  EmployeeTypeName varchar
+}
+
+Table Volunteer {
+  VolunteerId integer [primary key]
+  EmployeeId integer [not null]
+  Skill varchar
+}
+
+Table Physician {
+  PhysicianId integer [primary key]
+  EmployeeId integer [not null]
+  Specialty varchar
+  PagerNumber varchar
+}
+
+Table Nurse {
+  NurseId integer [primary key]
+  EmployeeId integer [not null]
+  CertificateTypeName varchar [not null]
+}
+
+Table Patient {
+  PatientId integer [primary key]
+  PersonId integer [not null]
+  PhysicianId integer [not null]
+  CareCenterId integer [not null]
+  AddmittedDate datetime [not null]
+  AddmittanceTypeName varchar [not null]
+  Comments text
+}
+
+Table PatientResidents {
+  PatientResidentId integer [primary key]
+  PatientId integer [not null]
+  BedId integer [not null]
+}
+
+Table AdmittanceTypes {
+  AdmittanceTypeId integer [primary key]
+  AddmittanceTypeName varchar
+}
+
+Table PatientVisit {
+  VisitId integer [primary key]
+  PatientId integer
+  ContactDate datetime
+  CareCenterId integer
+  PhysicianId integer
+  Comments varchar
+}
+
+Table Treatments {
+  TreatmentId integer [primary key]
+  VisitId integer
+  TreatmentDate datetime
+  TreatmentNumber integer
+  TreatmentName varchar
+  TreatmentTime integer
+  TreatementResults varchar
+}
+
+Table TreatmentResultTypes {
+  TreatementResultTypeNameId integer [primary key]
+  TreatementResultTypeName string
+}
+
+Table TreatmentsByPhysicians {
+  TreatmentByPhysicianId integer [primary key]
+  TreatmentId integer [not null]
+
+}
+
+Table TreatmentTypeNames {
+  TreatmentTypeNameId integer [primary key]
+  TreatmentTypeName varchar
+}
+
+Table PhysicianAvailableTreatments {
+  PhysicianAvailableTreatmentId integer [primary key]
+  TreatmentTypeID integer [not null]
+  PhysicianId integer [not null]
+}
+
+Table CareCenter {
+  CareCenterId integer [primary key]
+  Name varchar
+  Location varchar
+  CareCenterTypeName varchar
+}
+
+Table CareCenterTypes {
+  CareCenterTypeId integer [primary key]
+  CareCenterTypeName varchar
+}
+
+Table Beds {
+  BedId integer [primary key]
+  RoomNumber integer
+  CareCenterId integer
+}
+
+Table Labratory {
+  LabratoryId integer [primary key]
+  Name varchar
+  Location varchar
+}
+
+Table Technician {
+  TechnicianId integer [primary key]
+  EmployeeId integer
+  LabratoryId integer
+}
+
+Table EmployeeCareCenterAssignment {
+  AssignmentId integer [primary key]
+  EmployeeId integer [not null]
+  CareCenterId integer [not null]
+  IsNurseInCharge bool
+}
+
+Table EmployeeCareCenterAssignmentWorkEntry{
+  WorkEntryId integer [primary key]
+  WorkWeekId integer [not null]
+  Hours integer
+}
+
+
+Ref: "Volunteer"."EmployeeId" < "Employee"."EmployeeId"
+
+Ref: "Patient"."PersonId" < "Persons"."PersonId"
+
+Ref: "Physician"."EmployeeId" < "Employee"."EmployeeId"
+
+Ref: "Patient"."PhysicianId" < "Physician"."PhysicianId"
+
+Ref: "Persons"."PersonId" < "Employee"."PersonId"
+
+
+Ref: "Patient"."AddmittanceTypeName" < "AdmittanceTypes"."AddmittanceTypeName"
+
+Ref: "Patient"."CareCenterId" < "CareCenter"."CareCenterId"
+
+Ref: "CareCenterTypes"."CareCenterTypeName" < "CareCenter"."CareCenterTypeName"
+
+Ref: "EmployeeTypes"."EmployeeTypeName" < "Employee"."EmployeeTypeName"
+
+Ref: "EmployeeCareCenterAssignment"."CareCenterId" < "CareCenter"."CareCenterId"
