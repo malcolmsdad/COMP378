@@ -1,5 +1,5 @@
 Table Persons {
-  PersonId integer [primary key]
+  PersonId integer [pk]
   Name varchar
   Address varchar
   BirthDate date [not null]
@@ -7,159 +7,162 @@ Table Persons {
 }
 
 Table Employee {
-  EmployeeId integer [primary key]
+  EmployeeId integer [pk]
   PersonId integer [not null]
-  EmployeeTypeName varchar [not null]
+  EmployeeTypeId integer [not null]
   HiredDate date
 }
 
 Table EmployeeTypes {
-  EmployeeTypeId integer [primary key]
+  EmployeeTypeId integer [pk]
   EmployeeTypeName varchar
 }
 
 Table Volunteer {
-  VolunteerId integer [primary key]
+  VolunteerId integer [pk]
   EmployeeId integer [not null]
   Skill varchar
 }
 
 Table Physician {
-  PhysicianId integer [primary key]
+  PhysicianId integer [pk]
   EmployeeId integer [not null]
   Specialty varchar
   PagerNumber varchar
 }
 
 Table Nurse {
-  NurseId integer [primary key]
+  NurseId integer [pk]
   EmployeeId integer [not null]
   CertificateTypeName varchar [not null]
 }
 
+Table Technician {
+  TechnicianId integer [pk]
+  EmployeeId integer [not null]
+}
+
+Table TechnicianLaboratory {
+  TechnicianId integer [not null]
+  LaboratoryId integer [not null]
+
+  Note: "M:N relationship between Technician and Laboratory"
+}
+
 Table Patient {
-  PatientId integer [primary key]
+  PatientId integer [pk]
   PersonId integer [not null]
-  PhysicianId integer [not null]
+  PhysicianId integer [not null] // responsible physician
+  ReferringPhysicianId integer [not null]
   CareCenterId integer [not null]
-  AddmittedDate datetime [not null]
-  AddmittanceTypeName varchar [not null]
+  AdmittanceTypeId integer [not null]
+  AdmittedDate datetime [not null]
   Comments text
 }
 
 Table PatientResidents {
-  PatientResidentId integer [primary key]
+  PatientResidentId integer [pk]
   PatientId integer [not null]
   BedId integer [not null]
 }
 
 Table AdmittanceTypes {
-  AdmittanceTypeId integer [primary key]
-  AddmittanceTypeName varchar
+  AdmittanceTypeId integer [pk]
+  AdmittanceTypeName varchar
 }
 
 Table PatientVisit {
-  VisitId integer [primary key]
-  PatientId integer
-  ContactDate datetime
-  CareCenterId integer
-  PhysicianId integer
+  VisitId integer [pk]
+  PatientId integer [not null]
+  VisitDate datetime [not null]
   Comments varchar
 }
 
 Table Treatments {
-  TreatmentId integer [primary key]
-  VisitId integer
-  TreatmentDate datetime
+  TreatmentId integer [pk]
   TreatmentNumber integer
   TreatmentName varchar
-  TreatmentTime integer
-  TreatementResults varchar
 }
 
-Table TreatmentResultTypes {
-  TreatementResultTypeNameId integer [primary key]
-  TreatementResultTypeName string
-}
-
-Table TreatmentsByPhysicians {
-  TreatmentByPhysicianId integer [primary key]
-  TreatmentId integer [not null]
-
-}
-
-Table TreatmentTypeNames {
-  TreatmentTypeNameId integer [primary key]
-  TreatmentTypeName varchar
-}
-
-Table PhysicianAvailableTreatments {
-  PhysicianAvailableTreatmentId integer [primary key]
-  TreatmentTypeID integer [not null]
+Table TreatmentRecord {
+  TreatmentRecordId integer [pk]
+  PatientId integer [not null]
   PhysicianId integer [not null]
+  TreatmentId integer [not null]
+  TreatmentDate datetime [not null]
+  TreatmentTime integer [not null]
+  TreatmentResults varchar
 }
 
 Table CareCenter {
-  CareCenterId integer [primary key]
+  CareCenterId integer [pk]
   Name varchar
   Location varchar
-  CareCenterTypeName varchar
+  CareCenterTypeId integer [not null]
 }
 
 Table CareCenterTypes {
-  CareCenterTypeId integer [primary key]
+  CareCenterTypeId integer [pk]
   CareCenterTypeName varchar
 }
 
 Table Beds {
-  BedId integer [primary key]
+  BedId integer [pk]
   RoomNumber integer
   CareCenterId integer
 }
 
-Table Labratory {
-  LabratoryId integer [primary key]
+Table Laboratory {
+  LaboratoryId integer [pk]
   Name varchar
   Location varchar
 }
 
-Table Technician {
-  TechnicianId integer [primary key]
-  EmployeeId integer
-  LabratoryId integer
-}
-
 Table EmployeeCareCenterAssignment {
-  AssignmentId integer [primary key]
+  AssignmentId integer [pk]
   EmployeeId integer [not null]
   CareCenterId integer [not null]
   IsNurseInCharge bool
 }
 
-Table EmployeeCareCenterAssignmentWorkEntry{
-  WorkEntryId integer [primary key]
+Table EmployeeCareCenterAssignmentWorkEntry {
+  WorkEntryId integer [pk]
+  AssignmentId integer [not null]
   WorkWeekId integer [not null]
   Hours integer
 }
 
+Ref: Employee.PersonId > Persons.PersonId
+Ref: Employee.EmployeeTypeId > EmployeeTypes.EmployeeTypeId
 
-Ref: "Volunteer"."EmployeeId" < "Employee"."EmployeeId"
+Ref: Volunteer.EmployeeId > Employee.EmployeeId
+Ref: Physician.EmployeeId > Employee.EmployeeId
+Ref: Nurse.EmployeeId > Employee.EmployeeId
+Ref: Technician.EmployeeId > Employee.EmployeeId
 
-Ref: "Patient"."PersonId" < "Persons"."PersonId"
+Ref: TechnicianLaboratory.TechnicianId > Technician.TechnicianId
+Ref: TechnicianLaboratory.LaboratoryId > Laboratory.LaboratoryId
 
-Ref: "Physician"."EmployeeId" < "Employee"."EmployeeId"
+Ref: Patient.PersonId > Persons.PersonId
+Ref: Patient.PhysicianId > Physician.PhysicianId
+Ref: Patient.ReferringPhysicianId > Physician.PhysicianId
+Ref: Patient.CareCenterId > CareCenter.CareCenterId
+Ref: Patient.AdmittanceTypeId > AdmittanceTypes.AdmittanceTypeId
 
-Ref: "Patient"."PhysicianId" < "Physician"."PhysicianId"
+Ref: PatientResidents.PatientId > Patient.PatientId
+Ref: PatientResidents.BedId > Beds.BedId
 
-Ref: "Persons"."PersonId" < "Employee"."PersonId"
+Ref: PatientVisit.PatientId > Patient.PatientId
 
+Ref: TreatmentRecord.PatientId > Patient.PatientId
+Ref: TreatmentRecord.PhysicianId > Physician.PhysicianId
+Ref: TreatmentRecord.TreatmentId > Treatments.TreatmentId
 
-Ref: "Patient"."AddmittanceTypeName" < "AdmittanceTypes"."AddmittanceTypeName"
+Ref: CareCenter.CareCenterTypeId > CareCenterTypes.CareCenterTypeId
 
-Ref: "Patient"."CareCenterId" < "CareCenter"."CareCenterId"
+Ref: Beds.CareCenterId > CareCenter.CareCenterId
 
-Ref: "CareCenterTypes"."CareCenterTypeName" < "CareCenter"."CareCenterTypeName"
+Ref: EmployeeCareCenterAssignment.EmployeeId > Employee.EmployeeId
+Ref: EmployeeCareCenterAssignment.CareCenterId > CareCenter.CareCenterId
 
-Ref: "EmployeeTypes"."EmployeeTypeName" < "Employee"."EmployeeTypeName"
-
-Ref: "EmployeeCareCenterAssignment"."CareCenterId" < "CareCenter"."CareCenterId"
+Ref: EmployeeCareCenterAssignmentWorkEntry.AssignmentId > EmployeeCareCenterAssignment.AssignmentId
